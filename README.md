@@ -26,4 +26,4 @@ SQlite is used for persistant data storage.
 
 This is a webserver hosting pages for the display of data. AmCharts.js is the charting library use to create the charts.
 
-Further details can be found on the Wiki.
+Further details can be found on the [Wiki](https://github.com/thunderbolt10/cot_tracker/wiki).
