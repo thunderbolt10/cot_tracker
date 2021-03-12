@@ -1,4 +1,4 @@
-# cot_tracker
+# CoT Tracker
 Commitments of Traders data tracker
 
 This is a package written for python v3.
@@ -21,3 +21,9 @@ pip install -r requirements.txt
 This module is responsible for pulling down raw data files, processing, and storing the data.
 It is designed to work with files downloaded from cftc.gov.
 SQlite is used for persistant data storage.
+
+## Cot Plot
+
+This is a webserver hosting pages for the display of data. AmCharts.js is the charting library use to create the charts.
+
+Further details can be found on the Wiki.
