@@ -1,0 +1,55 @@
+{
+    "cot source": [
+        {
+            "start year": "2010",
+            "disabled": "False",
+            "description": "Disaggregated Futures-and-Options Combined Reports",
+            "output file name": "Commodity Futures",
+            "data type": "DFaO",
+            "download" : {
+                "url": "https://www.cftc.gov/files/dea/history/",
+                "file prefix": "com_disagg_txt_",
+                "file suffix": ".zip"
+            },
+            "market name filters": [
+                "COCOA",
+                "COFFEE",
+                "COPPER-GRADE #1", 
+                "CORN",
+                "COTTON NO. 2",
+                "CRUDE OIL, LIGHT SWEET",
+                "ORANGE JUICE",
+                "GOLD", 
+                "LEAN HOGS",
+                "LIVE CATTLE",
+                "NATURAL GAS", 
+                "OATS",
+                "PALLADIUM",
+                "PLATINUM",
+                "RANDOM LENGTH LUMBER",
+                "ROUGH RICE",
+                "SILVER",
+                "SOYBEAN MEAL",
+                "SOYBEAN OIL",
+                "SOYBEANS",
+                "SUGAR NO. 11",
+                "WHEAT-HRW"
+                ]
+        },
+        {
+            "start year": "2010",
+            "disabled": "True",
+            "description": "Traders in Financial Futures ; Futures-and-Options Combined Reports",
+            "output file name": "Financial Futures",
+            "data type": "TiFF",
+            "download" : {
+                "url": "https://www.cftc.gov/files/dea/history/",
+                "file prefix": "com_fin_txt_",
+                "file suffix": ".zip"
+            },
+            "market name filters": [
+                
+                ]
+        }
+    ]
+}
