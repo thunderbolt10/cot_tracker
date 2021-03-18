@@ -23,7 +23,8 @@ class Importer():
                     (
                         id_name INTEGER NOT NULL PRIMARY KEY, 
                         display_name TEXT,
-                        filter_name TEXT NOT NULL UNIQUE
+                        filter_name TEXT NOT NULL UNIQUE,
+                        symbol TEXT NOT NULL UNIQUE
                     );''')
 
                 cur.execute('''CREATE TABLE futures 
@@ -89,15 +90,6 @@ class Importer():
                                                         sqlite3.PARSE_COLNAMES)
             cur = con.cursor()
 
-            """
-            for row in fdata:
-                cur.execute('''INSERT OR IGNORE INTO futures 
-                (id_name, report_date, cftc_code, open_interest, pm_long, pm_short, mm_long, mm_short)
-                VALUES (:market_id, :report_date, :CFTC_Contract_Market_Code, 
-                    :Open_Interest_All, :Prod_Merc_Positions_Long_All, :Prod_Merc_Positions_Short_All,
-                    :M_Money_Positions_Long_All, :M_Money_Positions_Short_All);''', row)
-
-            """
             cur.executemany('''INSERT OR IGNORE INTO futures 
             (id_name, report_date, cftc_code, open_interest, pm_long, pm_short, mm_long, mm_short)
             VALUES (:market_id, :report_date, :CFTC_Contract_Market_Code, 
@@ -116,15 +108,15 @@ class Importer():
         try:
             market_names = []
             for filter in fmap:
-                market_names.append({'display': None, 'filter': filter})
+                market_names.append({'display': None, 'filter': filter, 'symbol': fmap[filter]['symbol']})
 
             con = sqlite3.connect(self.db_filepath, detect_types=sqlite3.PARSE_DECLTYPES |
                                                         sqlite3.PARSE_COLNAMES)
             cur = con.cursor()
 
             # Add any new market names
-            cur.executemany('''INSERT OR IGNORE INTO market_names (display_name, filter_name) 
-                            VALUES (:display, :filter);''', market_names)
+            cur.executemany('''INSERT OR IGNORE INTO market_names (display_name, filter_name, symbol) 
+                            VALUES (:display, :filter, :symbol);''', market_names)
 
             cur.execute('''SELECT * FROM market_names''')
 
@@ -135,6 +127,7 @@ class Importer():
                     if row[2] in fmap:
                         fmap[row[2]]['id'] = row[0]
                         fmap[row[2]]['display_name'] = row[1]
+                        fmap[row[2]]['symbol'] = row[3]
 
             con.commit()
         except Exception as e:
@@ -164,11 +157,22 @@ class Importer():
         finally:
             con.close()
 
+    def generate_filter_names(self):
+        names = {}
+
+        for item in self.config['items']:
+            names[item['filter']] = item
+
+        return names
+
     def filter_names(self, data):
         fdata = [] # filtered data to the commodities we are interested in
         fmap = {}
-        for filter in self.config['market name filters']:
-            fmap[filter.upper()] = {'id': None, 'display_name': None}
+
+        filter_names = self.generate_filter_names()
+
+        for filter in filter_names:
+            fmap[filter.upper()] = {'id': None, 'display_name': None, 'symbol': filter_names[filter]['symbol']}
 
         self.intialise_filters(fmap)
 

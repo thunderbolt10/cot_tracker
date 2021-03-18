@@ -1,6 +1,6 @@
 {
-    "cot source": [
-        {
+    "cot source": {
+        "commodities": {
             "start year": "2010",
             "disabled": "False",
             "description": "Disaggregated Futures-and-Options Combined Reports",
@@ -11,32 +11,122 @@
                 "file prefix": "com_disagg_txt_",
                 "file suffix": ".zip"
             },
-            "market name filters": [
-                "COCOA",
-                "COFFEE",
-                "COPPER-GRADE #1", 
-                "CORN",
-                "COTTON NO. 2",
-                "CRUDE OIL, LIGHT SWEET",
-                "ORANGE JUICE",
-                "GOLD", 
-                "LEAN HOGS",
-                "LIVE CATTLE",
-                "NATURAL GAS", 
-                "OATS",
-                "PALLADIUM",
-                "PLATINUM",
-                "RANDOM LENGTH LUMBER",
-                "ROUGH RICE",
-                "SILVER",
-                "SOYBEAN MEAL",
-                "SOYBEAN OIL",
-                "SOYBEANS",
-                "SUGAR NO. 11",
-                "WHEAT-HRW"
+            "items": [
+                {
+                    "name": "Cocoa",
+                    "filter": "COCOA",
+                    "symbol": "CC"
+                },
+                {
+                    "name": "Coffee",
+                    "filter": "COFFEE",
+                    "symbol": "KC"
+                },
+                {
+                    "name": "Copper Grade #1",
+                    "filter": "COPPER-GRADE #1", 
+                    "symbol": "HG"
+                },
+                {
+                    "name": "Corn",
+                    "filter": "CORN",
+                    "symbol": "ZC"
+                },
+                {
+                    "name": "Cotton No.2",
+                    "filter": "COTTON NO. 2",
+                    "symbol": "CT"
+                },
+                {
+                    "name": "Crude Oil (light sweet)",
+                    "filter": "CRUDE OIL, LIGHT SWEET",
+                    "symbol": "CL"
+                },
+                {
+                    "name": "Frozen Orange Juice",
+                    "filter": "ORANGE JUICE",
+                    "symbol": "OJ"
+                },
+                {
+                    "name": "Gold",
+                    "filter": "GOLD", 
+                    "symbol": "GC"
+                },
+                {
+                    "name": "Lean Hogs",
+                    "filter": "LEAN HOGS",
+                    "symbol": "HE"
+                },
+                {
+                    "name": "Live Cattle",
+                    "filter": "LIVE CATTLE",
+                    "symbol": "LE"
+                },
+                {
+                    "name": "Natural Gas",
+                    "filter": "NATURAL GAS", 
+                    "symbol": "NG"
+                },
+                {
+                    "name": "Oats",
+                    "filter": "OATS",
+                    "symbol": "ZO"
+                },
+                {
+                    "name": "Palladium",
+                    "filter": "PALLADIUM",
+                    "symbol": "PA"
+                },
+                {
+                    "name": "Platinum",
+                    "filter": "PLATINUM",
+                    "symbol": "PL"
+                },
+                {
+                    "name": "Random Length Lumber",
+                    "filter": "RANDOM LENGTH LUMBER",
+                    "symbol": "LB"
+                },
+                {
+                    "name": "Rough Rice",
+                    "filter": "ROUGH RICE",
+                    "symbol": "ZR"
+                },
+                {
+                    "name": "Silver",
+                    "filter": "SILVER",
+                    "symbol": "SI"
+                },
+                {
+                    "name": "Soybean Meal",
+                    "filter": "SOYBEAN MEAL",
+                    "symbol": "ZM"
+                },
+                {
+                    "name": "Soybean Oil",
+                    "filter": "SOYBEAN OIL",
+                    "symbol": "ZL"
+                },
+                {
+                    "name": "Soybean",
+                    "filter": "SOYBEANS",
+                    "symbol": "ZS"
+                },
+                {
+                    "name": "Sugar No.11",
+                    "filter": "SUGAR NO. 11",
+                    "symbol": "SB"
+                },
+                {
+                    "name": "Wheat-SRW",
+                    "filter": "WHEAT-SRW",
+                    "symbol": "ZW"
+                }
+                
+
                 ]
         },
-        {
+        "financial": {
             "start year": "2010",
             "disabled": "True",
             "description": "Traders in Financial Futures ; Futures-and-Options Combined Reports",
@@ -51,5 +141,8 @@
                 
                 ]
         }
-    ]
+    },
+    "cot plot": {
+        "port": 80
+    }
 }

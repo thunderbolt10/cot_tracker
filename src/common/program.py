@@ -3,6 +3,7 @@ __author__ = 'alang'
 print(__name__)
 
 import os
+from re import template
 import sys
 import inspect
 
@@ -31,6 +32,7 @@ def get_base_dir(sub_path=None):
 
     else:
         this_dir = os.path.dirname(inspect.getfile(inspect.currentframe()))
+        this_dir = os.path.abspath(os.path.join(this_dir, '..\\..'))
         
         if sub_path:
             out_dir = os.path.abspath(os.path.join(this_dir, sub_path))
@@ -50,7 +52,7 @@ def get_bin_dir(sub_path):
         return out_dir
 
     else:
-        this_dir = os.path.dirname(inspect.getfile(inspect.currentframe()))
+        this_dir = os.path.join(os.path.dirname(inspect.getfile(inspect.currentframe())), '..')
         out_dir = os.path.abspath(os.path.join(this_dir, sub_path))
         return out_dir
 
@@ -62,7 +64,11 @@ def get_local_dir(folder):
 
     return outdir
 
-template_path = get_bin_dir('web//templates')
+template_path = get_bin_dir('')
+
+def set_template_path(tmpl_base_path):
+    global template_path 
+    template_path = tmpl_base_path
 
 def get_template(template_filename):
     return '%s//%s' % (template_path, template_filename)

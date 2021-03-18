@@ -9,6 +9,12 @@
             "type": "python",
             "request": "launch",
             "module": "src.main_ingester"
+        },
+        {
+            "name": "CoT Plot",
+            "type": "python",
+            "request": "launch",
+            "module": "src.main_plot"
         }
     ]
 }

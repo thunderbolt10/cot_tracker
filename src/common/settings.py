@@ -15,3 +15,10 @@ class Settings():
             self.config = json.load(fp)
 
         self.log.info(self.config)
+
+    def get_web_port(self):
+        if 'cot plot' in self.config:
+            if 'port' in self.config['cot plot']:
+                return self.config['cot plot']['port']
+
+        return 80
