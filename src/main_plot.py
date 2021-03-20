@@ -17,7 +17,7 @@ from pyramid.authorization import ACLAuthorizationPolicy
 import src.common.program as program
 import src.common.settings as settings
 from src.cot_plot.security import groupfinder, forbidden, load_user_accounts
-
+from src.updater import Updater
 
 import src.cot_plot.views.cot
 
@@ -124,6 +124,7 @@ class WebServer(object):
                               root_factory='src.cot_plot.resources.Root')
 
         self.settings = settings.Settings()
+        self.updater = Updater()
 
     def startup(self):
         status = False
@@ -214,6 +215,8 @@ class WebServer(object):
         return status
 
     def run(self):
+        self.logger.info('Start updater')
+        self.updater.initialise()
         self.logger.info("Server Running")
         try:
             cherrypy.engine.block()
@@ -227,6 +230,9 @@ class WebServer(object):
             self.logger.info("Exit cherrypy engine")
             cherrypy.engine.exit()
 
+            self.logger.info("Exit updater")
+            self.updater.shutdown()
+        
             self.logger.info("Shutdown complete")
         except Exception as e:
             self.logger.exception(e)

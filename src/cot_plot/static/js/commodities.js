@@ -42,6 +42,11 @@ function plot_chart(data) {
 
     dateAxis.groupData = true;
     dateAxis.minZoomCount = 5;
+    dateAxis.baseInterval = {
+      "timeUnit": "day",
+      "count": 1
+    };
+    //dateAxis.minGridDistance = 1;
 
     // these two lines makes the axis to be initially zoomed-in
     // dateAxis.start = 0.7;

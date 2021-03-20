@@ -14,8 +14,6 @@ class Settings():
         with open(settings_file) as fp:
             self.config = json.load(fp)
 
-        self.log.info(self.config)
-
     def get_web_port(self):
         if 'cot plot' in self.config:
             if 'port' in self.config['cot plot']:

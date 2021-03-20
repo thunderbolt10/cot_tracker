@@ -32,7 +32,7 @@ def get_base_dir(sub_path=None):
 
     else:
         this_dir = os.path.dirname(inspect.getfile(inspect.currentframe()))
-        this_dir = os.path.abspath(os.path.join(this_dir, '..\\..'))
+        this_dir = os.path.abspath(os.path.join(this_dir, '../..'))
         
         if sub_path:
             out_dir = os.path.abspath(os.path.join(this_dir, sub_path))
