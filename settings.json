@@ -6,11 +6,22 @@
             "description": "Disaggregated Futures-and-Options Combined Reports",
             "output file name": "Commodity Futures",
             "data type": "DFaO",
-            "download" : {
-                "url": "https://www.cftc.gov/files/dea/history/",
-                "file prefix": "com_disagg_txt_",
-                "file suffix": ".zip"
-            },
+            "live price url": "https://finance.yahoo.com/commodities",
+            "alt live price url": "https://finance.yahoo.com/quote/",
+            "download" : [
+                {
+                    "type": "cot",
+                    "url": "https://www.cftc.gov/files/dea/history/",
+                    "file prefix": "com_disagg_txt_",
+                    "file suffix": ".zip"
+                },
+                {
+                    "type": "com price",
+                    "url": "https://query1.finance.yahoo.com/v7/finance/download/",
+                    "file prefix": "",
+                    "file suffix": "interval=1wk&events=history&includeAdjustedClose=true"
+                }
+            ],
             "items": [
                 {
                     "name": "Cocoa",

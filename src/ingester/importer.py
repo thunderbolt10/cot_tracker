@@ -66,6 +66,21 @@ class Importer():
                         ) as t1
                     ) as t2;''')
 
+                cur.execute('''CREATE TABLE future_prices 
+                    (
+                        id_price INTEGER NOT NULL PRIMARY KEY,
+                        id_name INTEGER NOT NULL,
+                        report_date DATE NOT NULL,
+                        open REAL,
+                        high REAL,
+                        low REAL,
+                        close REAL,
+                        volume INTEGER,
+                        FOREIGN KEY (id_name) REFERENCES market_name (id_name) 
+                            ON DELETE CASCADE ON UPDATE NO ACTION,
+                        UNIQUE(id_name, report_date)
+                    );''')
+
 
             elif self.config['data type'] == 'TiFF':
                 self.log.info('Create db %s with TiFF format', self.db_filepath)
@@ -77,7 +92,7 @@ class Importer():
         finally:
             con.close()      
 
-    def import_data(self, data):
+    def import_cot_data(self, data):
         fpath = pathlib.Path(self.db_filepath)
 
         if not fpath.exists():
@@ -103,6 +118,8 @@ class Importer():
             self.log.exception(e)
         finally:
             con.close()
+
+    
 
     def intialise_filters(self, fmap):
         try:
@@ -212,6 +229,35 @@ class Importer():
 
         return fdata
 
-        
+    def import_commodity_price(self, item, data):
+        self.log.info('Import price for: %s', item)
 
+        try:
+            con = sqlite3.connect(self.db_filepath, detect_types=sqlite3.PARSE_DECLTYPES |
+                                                        sqlite3.PARSE_COLNAMES)
+            cur = con.cursor()
+
+            cur.execute('''SELECT id_name FROM market_names 
+                            WHERE symbol=:symbol''', item)
+
+            r = cur.fetchone()
+            if r is None:
+                raise Exception('null id_name for %s' % item['symbol'])
+                
+            id_name = r[0]
+
+            for row in data:
+                row['market_id'] = id_name
+
+            cur.executemany('''INSERT OR IGNORE INTO future_prices 
+            (id_name, report_date, open, high, low, close, volume)
+            VALUES (:market_id, :Date, :Open, 
+                :High, :Low, :Close, :Volume);''', data)
+
+            con.commit()
         
+        except Exception as e:
+            con.rollback()
+            self.log.exception(e)
+        finally:
+            con.close()

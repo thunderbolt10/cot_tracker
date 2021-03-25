@@ -16,6 +16,8 @@ class Ingester():
         self.folders={
             'zip': program.get_base_dir('store/zip'),
             'db': program.get_base_dir('store')
+
+
         }
 
     def create_folders(self):
@@ -40,38 +42,82 @@ class Ingester():
                     self.logger.warning('Skipping import for source profile: %s', source['description'])
                     continue
 
-                # Search our zip folder for missing files by year
-                for year in range(int(source['start year']), today.year + 1):
-                    file_complete = False
+                for download in source['download']:
+                    if download['type'] == "cot":
+                        self.download_cot_data(source, download, int(source['start year']), today.year + 1)
+                    elif download['type'] == 'com price':
+                        self.download_cot_price(source, download, int(source['start year']), today)
 
-                    filename = source['download']['file prefix'] + str(year) + source['download']['file suffix']
-                    
-                    fpath = pathlib.Path(os.path.join(self.folders['zip'], filename))
+        except Exception as e:
+                self.logger.exception(e)
 
-                    # If a file for a year is found then check the modified date is later than the year of the file
-                    # to verify if the full year has been downloaded
-                    if fpath.exists() and fpath.is_file():
-                        mod_time = datetime.datetime.fromtimestamp(fpath.stat().st_mtime)
-                        if mod_time.year > year:
-                            file_complete = True
-                    
-                    if not file_complete:
-                        crawler = Crawler()
+        self.logger.info('Ended COT Ingester Cycle')
+        
+    def download_cot_data(self, source, download, start_year, end_year):
+        try:
+            # Search our zip folder for missing files by year
+            for year in range(start_year, end_year):
+                file_complete = False
 
-                        # Downloading and extracting COT files
-                        # Returns an array of data (the cot file contents) unfiltered
-                        data = crawler.download_COT_file( source, 
-                                                filename, 
-                                                self.folders['zip']
-                                                )
-                                                
-                        imp = Importer(self.folders['db'], source)        
-                        imp.import_data(data)
+                filename = download['file prefix'] + str(year) + download['file suffix']
+                
+                fpath = pathlib.Path(os.path.join(self.folders['zip'], filename))
+
+                # If a file for a year is found then check the modified date is later than the year of the file
+                # to verify if the full year has been downloaded
+                if fpath.exists() and fpath.is_file():
+                    mod_time = datetime.datetime.fromtimestamp(fpath.stat().st_mtime)
+                    if mod_time.year > year:
+                        file_complete = True
+                
+                if not file_complete:
+                    crawler = Crawler()
+
+                    # Downloading and extracting COT files
+                    # Returns an array of data (the cot file contents) unfiltered
+                    data = crawler.download_COT_file( download, 
+                                            filename, 
+                                            self.folders['zip']
+                                            )
+                                            
+                    imp = Importer(self.folders['db'], source)        
+                    imp.import_cot_data(data)
 
         except Exception as e:
             self.logger.exception(e)
 
-        self.logger.info('Ended COT Ingester Cycle')
+
+    def unix_time_seconds(self, dt):
+        epoch = datetime.datetime.utcfromtimestamp(0)
+        return (dt - epoch).total_seconds()
+
+    def download_cot_price(self, source, download, start_year, today):
+        try:
+            crawler = Crawler()
+
+            for item in source['items']:
+                start_period = self.unix_time_seconds(datetime.datetime(start_year, 1, 1, 0, 0, 0, 0))
+                end_period = self.unix_time_seconds(today.replace(hour=0, minute=0, second=0))
+
+                #start_period = 963792000
+                #end_period = 1616371200
+                filename = '%s=F?period1=%d&period2=%d&%s' % \
+                            (item['symbol'], \
+                                start_period, end_period, download['file suffix'])
+
+                # Downloading and extracting COT files
+                # Returns an array of data (the cot file contents) unfiltered
+                data = crawler.download_COT_file( download, 
+                                        filename, 
+                                        self.folders['zip']
+                                        )
+                                        
+                imp = Importer(self.folders['db'], source)        
+                imp.import_commodity_price(item, data)
+
+        except Exception as e:
+            self.logger.exception(e)
+
         
 
 if __name__ == "__main__":

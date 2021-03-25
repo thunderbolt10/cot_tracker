@@ -21,18 +21,30 @@
 </%block>
 
 <!-- Sidebar -->
-<nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l1 w3-animate-left" id="mySidebar">
+<nav class="w3-sidebar w3-bar-block w3-collapse w3-large  w3-animate-left my-theme" id="mySidebar">
   <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="Close Menu">
     <i class="fa fa-remove"></i>
   </a>
-  <div class="sidebar-title"><b>Symbol</b></div>
+  <div class="sidebar-title">
+    <div class="w3-row ">
+      <div class="w3-col" style="width:30%"><b>Symbol</b></div>
+      <div class="w3-col" style="width:23%; text-align: right"><b>Price</b></div>
+      <div class="w3-col" style="width:23%; text-align: right"><b>Chg</b></div>
+      <div class="w3-col" style="width:23%; text-align: right"><b>% Chg</b></div>
+    </div>
+  </div>
   
   % for c in commodities:
-  <a id="${c['symbol']}" class="sidebar-item w3-button w3-hover-black tooltip" 
+  <a id="${c['symbol']}" class="sidebar-item w3-button w3-hover-black " 
     data-name="${c['name']}"
     onclick="commodity_selection(this)">
-    ${c['symbol']}
-    <span class="tooltiptext">${c['name']}</span>
+    <div class="w3-row ">
+      <div class="w3-col" style="width:30%">${c['symbol']}</div>  
+      <div id="${c['symbol']}-price" class="w3-col com-value" style="width:23%"></div>
+      <div id="${c['symbol']}-change" class="w3-col com-value" style="width:23%"></div>
+      <div id="${c['symbol']}-pchange" class="w3-col com-value" style="width:23%"></div>
+    </div>
+    
   </a>
   % endfor
 </nav>
@@ -88,6 +100,7 @@
 
       $( document ).ready(function() {
         $('#commodity-page-light').addClass('pink-bkg');
+        update_prices();
       });
 
       function commodity_selection(ctrl){
@@ -99,9 +112,48 @@
             success: function (data) {
                 console.log('data success', data);
                 $('#page-item-title').text(data['future_name']);
-                plot_chart(data['data'])
+                plot_chart(data['cot'], data['price'])
             }
         });
       };
+    
+      var timer = setInterval(update_prices, 60000);
+
+      function update_prices() {
+        
+        var url = "${request.route_url('cot_prices')}";
+        
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function (data) {
+              for (i in data) {
+                var item = data[i];
+                console.log(item);
+
+                $('#' + item['symbol'] + '-price').text(item['price']);
+                $('#' + item['symbol'] + '-change').text(item['change']);
+                $('#' + item['symbol'] + '-pchange').text(item['% change']);
+
+                if (item['change'] >= 0.0) {
+                  $('#' + item['symbol'] + '-change').removeClass('negative-value')
+                } else {
+                  $('#' + item['symbol'] + '-change').addClass('negative-value')
+                }
+
+                
+                if (item['% change'] >= 0.0) {
+                  $('#' + item['symbol'] + '-change').removeClass('negative-value')
+                } else {
+                  $('#' + item['symbol'] + '-pchange').addClass('negative-value')
+                }
+              }
+           }
+        });
+      };
+
+      
+
+      
   </script>
 </%block>

@@ -15,19 +15,19 @@
     </a>
     <ol class="w3-ul w3-bar-item w3-hide-small" style="padding: 0px;">
         <li style="padding: 0px;">
-            <a href="/cot_plot/cot/chart" class="w3-button w3-hover-white">Commodities</a>
+            <a href="/cot_plot/cot/chart" class="w3-button">Commodities</a>
         </li>
         <li id="commodity-page-light" class="page-btn-light"></li>
     </ol>
     <ol class="w3-ul w3-bar-item w3-hide-small" style="padding: 0px;">
         <li style="padding: 0px;">
-            <a href="#" class="w3-button w3-hover-white">Currencies/Bonds</a>
+            <a href="#" class="w3-button">Currencies/Bonds</a>
         </li>
         <li id="currency-page-light" class="page-btn-light"></li>
     </ol>
     <ol class="w3-ul w3-bar-item w3-hide-small" style="padding: 0px;">
         <li style="padding: 0px;">
-            <a href="#" class="w3-button w3-hover-white">Stocks</a>
+            <a href="#" class="w3-button">Stocks</a>
         </li>
         <li id="stock-page-light" class="page-btn-light"></li>
     </ol>

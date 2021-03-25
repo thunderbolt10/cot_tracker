@@ -24,6 +24,7 @@ import src.cot_plot.views.cot
 def cot_routes(config):
     config.add_route('cot_chart', '/chart')
     config.add_route('cot_chart_data', '/chart/{code}' )
+    config.add_route('cot_prices', '/prices')
 
 def radius_client_routes(config):
     config.add_route('all_clients', '/')

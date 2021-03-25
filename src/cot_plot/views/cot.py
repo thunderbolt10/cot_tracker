@@ -3,6 +3,7 @@ import logging
 import src.common.program as program
 import src.common.settings as settings
 from src.cot_plot.model import DBmodel
+from src.ingester.web_scraper import Scraper
 
 log = logging.getLogger(__name__)
 
@@ -32,6 +33,12 @@ def include_views(config):
                     renderer='json',
                     request_method='GET')
 
+    config.add_view('src.cot_plot.views.cot.Cot',
+                    route_name='cot_prices',
+                    attr='get_price_data',
+                    renderer='json',
+                    request_method='GET')
+
 class Cot:
     def __init__(self, request):
         self.logger = logging.getLogger(__name__)
@@ -53,3 +60,18 @@ class Cot:
         model = DBmodel(self.settings.config['cot source']['commodities']['output file name'] + '.db')
         data = model.get_commodity_data(com_code)
         return data
+
+    def get_price_data(self):
+
+        url = self.settings.config['cot source']['commodities']['live price url']
+        alt_url = self.settings.config['cot source']['commodities']['alt live price url']
+        commodities = self.settings.config['cot source']['commodities']['items']
+
+        symbols = []
+        for c in commodities:
+            symbols.append(c['symbol'])
+
+        ws = Scraper()
+        prices = ws.get_commodity_prices(url, alt_url, symbols)
+
+        return prices

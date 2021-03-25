@@ -12,8 +12,9 @@ class DBmodel():
 
     def get_commodity_data(self, com_code):
         data = {
-            'data': [],
-            'future_name': ''
+            'future_name': '',
+            'cot': [],
+            'price': [],
         }
         try:
             param = {'code': com_code}
@@ -35,11 +36,30 @@ class DBmodel():
             result = cur.fetchall()
             for r in result:
                 if r[0] is not None and r[1] is not None and r[2] is not None and r[3] is not None:
-                    data['data'].append({
+                    data['cot'].append({
                         'date': str(r[0]),
                         'oi': r[1],
                         'pm5': r[2],
                         'mm5': r[3]
+                    })
+
+            # Get price data
+            cur.execute('''SELECT report_date, round(high,2), round(low,2), round(close,2), volume
+                    FROM future_prices
+                    JOIN market_names on future_prices.id_name=market_names.id_name
+                    WHERE market_names.symbol = :code;
+                ''', param)
+
+            result = cur.fetchall()
+            for r in result:
+                if r[0] is not None and r[1] is not None and r[2] is not None \
+                    and r[3] is not None and r[4] is not None:
+                    data['price'].append({
+                        'date': str(r[0]),
+                        'high': r[1],
+                        'low': r[2],
+                        'close': r[3],
+                        'volume': r[4]
                     })
 
         except Exception as e:
