@@ -55,9 +55,9 @@
 <!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
 <div class="w3-main" >
   <div class="w3-row w3-padding-32">
-    <h2 id="page-item-title" class="pink-text">Select a Commodity</h2>
-    <div id="controls" class="chart-controls"></div>
+    <h5 id="page-item-title" class="pink-text">Select a Commodity</h5>
     <div id="chartdiv" class="main-chart"></div>
+    <div id="controls" class="chart-controls"></div>
   </div>
   
 <!-- END MAIN -->
@@ -83,19 +83,19 @@
 
       // Toggle between showing and hiding the sidebar, and add overlay effect
       function w3_open() {
-      if (mySidebar.style.display === 'block') {
-          mySidebar.style.display = 'none';
-          overlayBg.style.display = "none";
-      } else {
-          mySidebar.style.display = 'block';
-          overlayBg.style.display = "block";
-      }
+        if (mySidebar.style.display === 'block') {
+            mySidebar.style.display = 'none';
+            overlayBg.style.display = "none";
+        } else {
+            mySidebar.style.display = 'block';
+            overlayBg.style.display = "block";
+        }
       }
 
       // Close the sidebar with the close button
       function w3_close() {
-      mySidebar.style.display = "none";
-      overlayBg.style.display = "none";
+        mySidebar.style.display = "none";
+        overlayBg.style.display = "none";
       }
 
       $( document ).ready(function() {
@@ -110,7 +110,6 @@
             type: "GET",
             url: url,
             success: function (data) {
-                console.log('data success', data);
                 $('#page-item-title').text(data['future_name']);
                 plot_chart(data['cot'], data['price'])
             }
@@ -129,7 +128,6 @@
             success: function (data) {
               for (i in data) {
                 var item = data[i];
-                console.log(item);
 
                 $('#' + item['symbol'] + '-price').text(item['price']);
                 $('#' + item['symbol'] + '-change').text(item['change']);

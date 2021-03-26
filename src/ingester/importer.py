@@ -3,6 +3,7 @@ import sqlite3
 import os
 import pathlib
 import datetime
+import itertools
 
 class Importer():
     def __init__(self, db_folder, source):
@@ -71,9 +72,6 @@ class Importer():
                         id_price INTEGER NOT NULL PRIMARY KEY,
                         id_name INTEGER NOT NULL,
                         report_date DATE NOT NULL,
-                        open REAL,
-                        high REAL,
-                        low REAL,
                         close REAL,
                         volume INTEGER,
                         FOREIGN KEY (id_name) REFERENCES market_name (id_name) 
@@ -249,10 +247,13 @@ class Importer():
             for row in data:
                 row['market_id'] = id_name
 
+            # Remove null entries from import list
+            fdata = []
+            fdata[:] = itertools.filterfalse(lambda row: row['Close'] == 'null', data)
+                
             cur.executemany('''INSERT OR IGNORE INTO future_prices 
-            (id_name, report_date, open, high, low, close, volume)
-            VALUES (:market_id, :Date, :Open, 
-                :High, :Low, :Close, :Volume);''', data)
+            (id_name, report_date, close, volume)
+            VALUES (:market_id, :Date, :Close, :Volume);''', fdata)
 
             con.commit()
         

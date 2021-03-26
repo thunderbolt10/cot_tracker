@@ -1,5 +1,5 @@
 // Themes begin
-am4core.useTheme(am4themes_animated);
+//am4core.useTheme(am4themes_animated);
 am4core.useTheme(am4themes_amchartsdark);
 // Themes end
 
@@ -54,9 +54,9 @@ function plot_chart(cot_data, price_data) {
     var OIAxis = chart.yAxes.push(new am4charts.ValueAxis());
     OIAxis.tooltip.disabled = true;
     // height of axis
-    OIAxis.height = am4core.percent(20);
+    OIAxis.height = am4core.percent(10);
     OIAxis.zIndex = 2;
-    OIAxis.marginTop = 20;
+    OIAxis.marginTop = 18;
     OIAxis.renderer.baseGrid.disabled = true;
     OIAxis.renderer.inside = false;
     OIAxis.renderer.gridContainer.background.fill = am4core.color("#000000");
@@ -91,7 +91,7 @@ function plot_chart(cot_data, price_data) {
     var cotAxis = chart.yAxes.push(new am4charts.ValueAxis());
     cotAxis.tooltip.disabled = true;
     // height of axis
-    cotAxis.height = am4core.percent(25);
+    cotAxis.height = am4core.percent(30);
     cotAxis.zIndex = 3;
     cotAxis.min = 0;
     cotAxis.max = 100;
@@ -143,7 +143,7 @@ function plot_chart(cot_data, price_data) {
     var priceAxis = chart.yAxes.push(new am4charts.ValueAxis());
     priceAxis.tooltip.disabled = true;
     // height of axis
-    priceAxis.height = am4core.percent(20);
+    priceAxis.height = am4core.percent(30);
     priceAxis.zIndex = 1;
     priceAxis.marginTop = 30;
     // this makes gap between panels
@@ -156,7 +156,7 @@ function plot_chart(cot_data, price_data) {
     //valueAxis.renderer.maxLabelPosition = 0.95;
     priceAxis.renderer.fontSize = "0.8em";
     priceAxis.title.text = '$';
-    
+    /*
     var HLseries = chart.series.push(new am4charts.LineSeries());
     HLseries.data = price_data
     HLseries.dataFields.dateX = "date";
@@ -171,7 +171,7 @@ function plot_chart(cot_data, price_data) {
     HLseries.fill = am4core.color('#f0b0b0');
     //HLseries.sequencedInterpolation = false;
     //HLseries.defaultState.transitionDuration = 1000;
-    
+    */
 
     var PriceSeries = chart.series.push(new am4charts.LineSeries());
     PriceSeries.data = price_data
@@ -194,7 +194,7 @@ function plot_chart(cot_data, price_data) {
     volumeAxis.tooltip.disabled = true;
     //volumeAxis.renderer.opposite = true;
     // height of axis
-    volumeAxis.height = am4core.percent(8);
+    volumeAxis.height = am4core.percent(12);
     volumeAxis.zIndex = 1
     volumeAxis.marginTop = 30;
     volumeAxis.renderer.baseGrid.disabled = true;
@@ -224,37 +224,57 @@ function plot_chart(cot_data, price_data) {
     //VolSeries.defaultState.transitionDuration = 1000;
     //VolSeries.sequencedInterpolation = false;
 
+
+    var div_height = document.getElementById('chartdiv').clientHeight.toString();
+    console.log('div height: ', div_height);
+
+    positions = {
+      '720': {
+        'oi': 0,
+        'pm': 77,
+        'price': 271,
+        'vol': 467,
+      },
+      '800': {
+        'oi': 0,
+        'pm': 88,
+        'price': 311,
+        'vol': 535,
+      }
+    }
     var OIlabel = chart.plotContainer.createChild(am4core.Label);
     OIlabel.text = "Open Interest";
     OIlabel.x = 50;
-    OIlabel.y = 0;
+    OIlabel.y = positions[div_height]['oi'];
 
 
     var PMlabel = chart.plotContainer.createChild(am4core.Label);
     PMlabel.text = "Dealers and Speculators";
     PMlabel.x = 50;
-    PMlabel.y = 176;
+    PMlabel.y = positions[div_height]['pm'];
 
 
     var Pricelabel = chart.plotContainer.createChild(am4core.Label);
     Pricelabel.text = "Price (weekly)";
     Pricelabel.x = 50;
-    Pricelabel.y = 383;
+    Pricelabel.y = positions[div_height]['price'];
 
     
     var Vollabel = chart.plotContainer.createChild(am4core.Label);
     Vollabel.text = "Volume (weekly)";
     Vollabel.x = 50;
-    Vollabel.y = 547;
+    Vollabel.y = positions[div_height]['vol'];
 
     chart.cursor = new am4charts.XYCursor();
 
     var scrollbarX = new am4charts.XYChartScrollbar();
     scrollbarX.series.push(PriceSeries);
-    scrollbarX.marginBottom = 20;
+    scrollbarX.marginBottom = 10;
+    
     var sbSeries = scrollbarX.scrollbarChart.series.getIndex(0);
     sbSeries.dataFields.valueYShow = undefined;
     chart.scrollbarX = scrollbarX;
+    chart.scrollbarX.parent = chart.bottomAxesContainer;
     
     chart.legend = new am4charts.Legend();
     chart.legend.postion = 'bottom';
@@ -266,5 +286,19 @@ function plot_chart(cot_data, price_data) {
     selector.axis = dateAxis;
     selector.inputDateFormat = "dd-MM-yyyy";
 
+    dateAxis.showOnInit = false;
+
+    chart.events.on("ready", function() {
+      var max = dateAxis.max;
+      var date1 = new Date(max);
+      var date2 = new Date(max);
+      console.log('date1: ', date1);
+      am4core.time.add(date1, "year", -1);
+      console.log('date2: ', date1, date2, max)
+      dateAxis.zoomToDates(date1, date2, false, true);
+    });
 }; // end am4core.ready()
+
+
+
 
