@@ -54,8 +54,8 @@
 
 <!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
 <div class="w3-main" >
-  <div class="w3-row w3-padding-32">
-    <h5 id="page-item-title" class="pink-text">Select a Commodity</h5>
+  <div class="w3-row" style="padding-top: 30px;">
+    <h6 id="page-item-title" class="pink-text">Select a Commodity</h6>
     <div id="chartdiv" class="main-chart"></div>
     <div id="controls" class="chart-controls"></div>
   </div>
