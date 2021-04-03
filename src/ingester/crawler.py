@@ -7,10 +7,14 @@ import logging
 import os
 import csv
 import pathlib
+import quandl
+
 
 class Crawler():
-    def __init__(self):
+    def __init__(self, quandl_api_key):
         self.log = logging.getLogger(__name__)
+        if quandl_api_key:
+            quandl.ApiConfig.api_key = quandl_api_key
 
     def download_COT_file(self, download, filename, output_folder):
         self.log.debug('url: %s filename: %s', download['url'], filename)
@@ -74,3 +78,19 @@ class Crawler():
             self.log.exception(e)
 
         return data
+
+    def download_quandl_price(self,quandl_code, start, end):
+        data = []
+
+        print('code:', quandl_code, ' start:', start, ' end:', end)
+        qdata = quandl.get(quandl_code, start_date=start, end_date=end)
+
+        for index, row in qdata.iterrows():
+            data.append({
+                'Date': index.strftime('%Y-%m-%d'),
+                'Close': row['Settle'],
+                'Volume': row['Volume']
+                })
+
+        return data
+

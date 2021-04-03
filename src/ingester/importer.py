@@ -262,3 +262,39 @@ class Importer():
             self.log.exception(e)
         finally:
             con.close()
+
+    def get_year_of_last_price(self, item):
+        year = None
+        self.log.info('get_year_of_last_price for: %s', item)
+
+        try:
+            con = sqlite3.connect(self.db_filepath, detect_types=sqlite3.PARSE_DECLTYPES |
+                                                        sqlite3.PARSE_COLNAMES)
+            cur = con.cursor()
+
+            cur.execute('''SELECT id_name FROM market_names 
+                            WHERE symbol=:symbol''', item)
+
+            r = cur.fetchone()
+            if r is None:
+                raise Exception('null id_name for %s' % item['symbol'])
+                
+            param = {'id_name': r[0]}
+            
+            
+            cur.execute('''SELECT report_date FROM future_prices 
+                WHERE id_name=:id_name
+                ORDER BY report_date DESC
+                LIMIT 1;''', param)
+
+            last_report = cur.fetchone()
+            if last_report:
+                year = last_report[0].year
+                
+        except Exception as e:
+            con.rollback()
+            self.log.exception(e)
+        finally:
+            con.close()
+
+        return year

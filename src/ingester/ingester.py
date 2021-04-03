@@ -71,7 +71,7 @@ class Ingester():
                         file_complete = True
                 
                 if not file_complete:
-                    crawler = Crawler()
+                    crawler = Crawler(None)
 
                     # Downloading and extracting COT files
                     # Returns an array of data (the cot file contents) unfiltered
@@ -93,26 +93,42 @@ class Ingester():
 
     def download_cot_price(self, source, download, start_year, today):
         try:
-            crawler = Crawler()
+            api_key = None
+
+            if 'quandl api key' in self.settings.config:
+                api_key = self.settings.config['quandl api key']
+
+            crawler = Crawler(api_key)
 
             for item in source['items']:
-                start_period = self.unix_time_seconds(datetime.datetime(start_year, 1, 1, 0, 0, 0, 0))
-                end_period = self.unix_time_seconds(today.replace(hour=0, minute=0, second=0))
+                imp = Importer(self.folders['db'], source) 
+                last_year = imp.get_year_of_last_price(item)
+                if last_year is None:
+                    last_year = start_year       
+                start_date = datetime.datetime(last_year, 1, 1, 0, 0, 0, 0)
+                end_date = today.replace(hour=0, minute=0, second=0)
+                if 'quandl price code' in item:
+                    data = crawler.download_quandl_price(
+                                item['quandl price code'], 
+                                start_date.strftime('%Y-%m-%d'), 
+                                end_date.strftime('%Y-%m-%d'))
+                else:
 
-                #start_period = 963792000
-                #end_period = 1616371200
-                filename = '%s=F?period1=%d&period2=%d&%s' % \
-                            (item['symbol'], \
-                                start_period, end_period, download['file suffix'])
+                    start_period = self.unix_time_seconds(start_date)
+                    end_period = self.unix_time_seconds(end_date)
+                    #start_period = 963792000
+                    #end_period = 1616371200
+                    filename = '%s=F?period1=%d&period2=%d&%s' % \
+                                (item['symbol'], \
+                                    start_period, end_period, download['file suffix'])
 
-                # Downloading and extracting COT files
-                # Returns an array of data (the cot file contents) unfiltered
-                data = crawler.download_COT_file( download, 
-                                        filename, 
-                                        self.folders['zip']
-                                        )
-                                        
-                imp = Importer(self.folders['db'], source)        
+                    # Downloading and extracting COT files
+                    # Returns an array of data (the cot file contents) unfiltered
+                    data = crawler.download_COT_file( download, 
+                                            filename, 
+                                            self.folders['zip']
+                                            )
+                                            
                 imp.import_commodity_price(item, data)
 
         except Exception as e:

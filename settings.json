@@ -1,4 +1,5 @@
 {
+    "quandl api key": "",
     "cot source": {
         "commodities": {
             "start year": "2010",
@@ -19,13 +20,14 @@
                     "type": "com price",
                     "url": "https://query1.finance.yahoo.com/v7/finance/download/",
                     "file prefix": "",
-                    "file suffix": "interval=1d&events=history&includeAdjustedClose=true"
+                    "file suffix": "interval=1d&events=history&includeAdjustedClose=true",
+                    "quandl prefix": "https://www.quandl.com/data/"
                 }
             ],
             "items": [
                 {
                     "name": "Crude Oil (light sweet)",
-                    "filter": "CRUDE OIL, LIGHT SWEET",
+                    "filter": "CRUDE OIL, LIGHT SWEET - NEW YORK MERCANTILE EXCHANGE",
                     "symbol": "CL"
                 },
                 {
@@ -71,7 +73,7 @@
                 {
                     "name": "Random Length Lumber",
                     "filter": "RANDOM LENGTH LUMBER",
-                    "symbol": "LB"
+                    "symbol": "LBS"
                 },
                 {
                     "name": "Lean Hogs",
@@ -131,7 +133,8 @@
                 {
                     "name": "Frozen Orange Juice",
                     "filter": "ORANGE JUICE",
-                    "symbol": "OJ"
+                    "symbol": "OJ",
+                    "quandl price code": "CHRIS/ICE_OJ2"
                 }
             ]
         },
