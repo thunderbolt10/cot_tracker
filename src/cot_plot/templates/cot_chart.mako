@@ -131,7 +131,7 @@
 
                 $('#' + item['symbol'] + '-price').text(item['price']);
                 $('#' + item['symbol'] + '-change').text(item['change']);
-                $('#' + item['symbol'] + '-pchange').text(item['% change']);
+                $('#' + item['symbol'] + '-pchange').text(item['p change']);
 
                 if (item['change'] >= 0.0) {
                   $('#' + item['symbol'] + '-change').removeClass('negative-value')
@@ -140,8 +140,8 @@
                 }
 
                 
-                if (item['% change'] >= 0.0) {
-                  $('#' + item['symbol'] + '-change').removeClass('negative-value')
+                if (item['p change'] >= 0.0) {
+                  $('#' + item['symbol'] + '-pchange').removeClass('negative-value')
                 } else {
                   $('#' + item['symbol'] + '-pchange').addClass('negative-value')
                 }

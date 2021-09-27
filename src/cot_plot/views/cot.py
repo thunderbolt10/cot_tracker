@@ -4,6 +4,7 @@ import src.common.program as program
 import src.common.settings as settings
 from src.cot_plot.model import DBmodel
 from src.ingester.web_scraper import Scraper
+import src.yfinance as yf
 
 log = logging.getLogger(__name__)
 
@@ -63,15 +64,28 @@ class Cot:
 
     def get_price_data(self):
 
-        url = self.settings.config['cot source']['commodities']['live price url']
-        alt_url = self.settings.config['cot source']['commodities']['alt live price url']
         commodities = self.settings.config['cot source']['commodities']['items']
 
         symbols = []
+        indexes = ''
         for c in commodities:
             symbols.append(c['symbol'])
+            indexes += c['symbol'] + '=F '
 
-        ws = Scraper()
-        prices = ws.get_commodity_prices(url, alt_url, symbols)
+        prices = []
+        try:
+            t = yf.Tickers(indexes)
+            for s in symbols:
+                index = s + '=F'
+                
+                prices.append({
+                    'symbol': s,
+                    'price': t.tickers[index].info['regularMarketPrice'],
+                    'change': round(t.tickers[index].info['regularMarketChange'],3),
+                    'p change': round(t.tickers[index].info['regularMarketChangePercent'],3)
+                })
+        except Exception as e:
+            self.logger.exception(e)
 
         return prices
+
