@@ -1,5 +1,5 @@
 {
-    "quandl api key": "",
+    "quandl api key": "5y788y55ZZp5ne9yryys",
     "cot source": {
         "commodities": {
             "start year": "2010",
@@ -27,112 +27,114 @@
             "items": [
                 {
                     "name": "Crude Oil (light sweet)",
-                    "filter": "CRUDE OIL, LIGHT SWEET - NEW YORK MERCANTILE EXCHANGE",
+                    "filters": ["CRUDE OIL, LIGHT SWEET - NEW YORK MERCANTILE EXCHANGE",
+                                "WTI-PHYSICAL - NEW YORK MERCANTILE EXCHANGE"],
                     "symbol": "CL"
                 },
                 {
                     "name": "Natural Gas",
-                    "filter": "NATURAL GAS", 
+                    "filters": ["NATURAL GAS", 
+                                "NAT GAS NYME - NEW YORK MERCANTILE EXCHANGE"],
                     "symbol": "NG"
                 },
                 {
                     "name": "Corn",
-                    "filter": "CORN",
+                    "filters": ["CORN"],
                     "symbol": "ZC"
                 },
                 {
                     "name": "Soybean Meal",
-                    "filter": "SOYBEAN MEAL",
+                    "filters": ["SOYBEAN MEAL"],
                     "symbol": "ZM"
                 },
                 {
                     "name": "Soybean Oil",
-                    "filter": "SOYBEAN OIL",
+                    "filters": ["SOYBEAN OIL"],
                     "symbol": "ZL"
                 },
                 {
                     "name": "Soybean",
-                    "filter": "SOYBEANS",
+                    "filters": ["SOYBEANS"],
                     "symbol": "ZS"
                 },
                 {
                     "name": "Wheat-SRW",
-                    "filter": "WHEAT-SRW",
+                    "filters": ["WHEAT-SRW"],
                     "symbol": "ZW"
                 },
                 {
-                    "name": "Oats",
-                    "filter": "OATS",
-                    "symbol": "ZO"
-                },
-                {
                     "name": "Rough Rice",
-                    "filter": "ROUGH RICE",
+                    "filters": ["ROUGH RICE"],
                     "symbol": "ZR"
                 },
                 {
+                    "name": "Oats",
+                    "filters": ["OATS"],
+                    "symbol": "ZO"
+                },
+                {
                     "name": "Random Length Lumber",
-                    "filter": "RANDOM LENGTH LUMBER",
+                    "filters": ["RANDOM LENGTH LUMBER"],
                     "symbol": "LBS"
                 },
                 {
                     "name": "Lean Hogs",
-                    "filter": "LEAN HOGS",
+                    "filters": ["LEAN HOGS"],
                     "symbol": "HE"
                 },
                 {
                     "name": "Live Cattle",
-                    "filter": "LIVE CATTLE",
+                    "filters": ["LIVE CATTLE"],
                     "symbol": "LE"
                 },
                 {
                     "name": "Copper Grade #1",
-                    "filter": "COPPER-GRADE #1", 
+                    "filters": ["COPPER-GRADE #1", "COPPER- #1 - COMMODITY EXCHANGE INC"], 
                     "symbol": "HG"
                 },
                 {
                     "name": "Gold",
-                    "filter": "GOLD", 
+                    "filters": ["GOLD"], 
                     "symbol": "GC"
                 },
                 {
                     "name": "Palladium",
-                    "filter": "PALLADIUM",
+                    "filters": ["PALLADIUM"],
                     "symbol": "PA"
                 },
                 {
                     "name": "Platinum",
-                    "filter": "PLATINUM",
+                    "filters": ["PLATINUM"],
                     "symbol": "PL"
                 },
                 {
                     "name": "Silver",
-                    "filter": "SILVER",
+                    "filters": ["SILVER"],
                     "symbol": "SI"
                 },
                 {
                     "name": "Cocoa",
-                    "filter": "COCOA",
+                    "filters": ["COCOA"],
                     "symbol": "CC"
                 },
                 {
                     "name": "Coffee",
-                    "filter": "COFFEE",
+                    "filters": ["COFFEE"],
                     "symbol": "KC"
                 },
                 {
                     "name": "Cotton No.2",
-                    "filter": "COTTON NO. 2",
+                    "filters": ["COTTON NO. 2"],
                     "symbol": "CT"
                 },
                 {
                     "name": "Sugar No.11",
-                    "filter": "SUGAR NO. 11",
+                    "filters": ["SUGAR NO. 11"],
                     "symbol": "SB"
                 },
                 {
                     "name": "Frozen Orange Juice",
-                    "filter": "ORANGE JUICE",
+                    "filters": ["ORANGE JUICE"],
                     "symbol": "OJ",
                     "quandl price code": "CHRIS/ICE_OJ2"
                 }

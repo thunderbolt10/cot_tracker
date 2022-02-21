@@ -20,65 +20,74 @@ class Importer():
             cur = con.cursor()
             if self.config['data type'] == 'DFaO':
                 self.log.info('Create db %s with DFaO format', db_filepath)
-                cur.execute('''CREATE TABLE market_names 
-                    (
-                        id_name INTEGER NOT NULL PRIMARY KEY, 
-                        display_name TEXT,
-                        filter_name TEXT NOT NULL UNIQUE,
-                        symbol TEXT NOT NULL UNIQUE
-                    );''')
 
-                cur.execute('''CREATE TABLE futures 
-                    (
-                        id_future INTEGER NOT NULL PRIMARY KEY,
-                        id_name INTEGER NOT NULL,
-                        report_date DATE NOT NULL,
-                        cftc_code INTEGER,
-                        open_interest INTEGER,
-                        pm_long INTEGER,
-                        pm_short INTEGER,
-                        mm_long INTEGER,
-                        mm_short INTEGER,
-                        FOREIGN KEY (id_name) REFERENCES market_name (id_name) 
-                            ON DELETE CASCADE ON UPDATE NO ACTION,
-                        UNIQUE(id_name, report_date)
-                    );''')
+                tables = []
+                cur.execute('''SELECT * FROM sqlite_master where type='table' ''')
+                res = cur.fetchall()
+                for r in res:
+                    tables.append(r[2])
 
-                cur.execute('''CREATE VIEW future_calc AS
-                    SELECT t2.*, 
-                        100.0 * (t2.pm_net_as_percent_oi - t2.pm_5_yr_min )/ NULLIF(t2.pm_5_yr_max - t2.pm_5_yr_min, 0) as pm_net_5_yr,
-                        100.0 * (t2.mm_net_as_percent_oi - t2.mm_5_yr_min )/ nullif(t2.mm_5_yr_max - t2.mm_5_yr_min, 0) as mm_net_5_yr
-                    FROM (
-                        SELECT t1.*,                        
-                            MIN(t1.pm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as pm_5_yr_min,
-                            MAX(t1.pm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as pm_5_yr_max,
-                            MIN(t1.mm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as mm_5_yr_min,
-                            MAX(t1.mm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as mm_5_yr_max
+                if 'market_names' not in tables:
+                    cur.execute('''CREATE TABLE market_names 
+                        (
+                            id_name INTEGER NOT NULL PRIMARY KEY, 
+                            display_name TEXT,
+                            filter_name TEXT NOT NULL UNIQUE,
+                            symbol TEXT NOT NULL UNIQUE
+                        );''')
+
+                if 'futures' not in tables:
+                    cur.execute('''CREATE TABLE futures 
+                        (
+                            id_future INTEGER NOT NULL PRIMARY KEY,
+                            id_name INTEGER NOT NULL,
+                            report_date DATE NOT NULL,
+                            cftc_code INTEGER,
+                            open_interest INTEGER,
+                            pm_long INTEGER,
+                            pm_short INTEGER,
+                            mm_long INTEGER,
+                            mm_short INTEGER,
+                            FOREIGN KEY (id_name) REFERENCES market_name (id_name) 
+                                ON DELETE CASCADE ON UPDATE NO ACTION,
+                            UNIQUE(id_name, report_date)
+                        );''')
+
+                    cur.execute('''CREATE VIEW future_calc AS
+                        SELECT t2.*, 
+                            100.0 * (t2.pm_net_as_percent_oi - t2.pm_5_yr_min )/ NULLIF(t2.pm_5_yr_max - t2.pm_5_yr_min, 0) as pm_net_5_yr,
+                            100.0 * (t2.mm_net_as_percent_oi - t2.mm_5_yr_min )/ nullif(t2.mm_5_yr_max - t2.mm_5_yr_min, 0) as mm_net_5_yr
                         FROM (
-                            SELECT market_names.display_name, market_names.filter_name, 
-                                futures.*, 
-                                (futures.pm_long-futures.pm_short) as pm_net,
-                                100.0 * CAST (futures.pm_long-futures.pm_short as FLOAT)/futures.open_interest as pm_net_as_percent_oi,
-                                (futures.mm_long-futures.mm_short) as mm_net,
-                                100.0 * CAST (futures.mm_long-futures.mm_short as FLOAT)/futures.open_interest as mm_net_as_percent_oi
-                            FROM futures
-                            JOIN market_names on futures.id_name = market_names.id_name
-                            ORDER BY futures.id_name, report_date 
-                        ) as t1
-                    ) as t2;''')
+                            SELECT t1.*,                        
+                                MIN(t1.pm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as pm_5_yr_min,
+                                MAX(t1.pm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as pm_5_yr_max,
+                                MIN(t1.mm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as mm_5_yr_min,
+                                MAX(t1.mm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as mm_5_yr_max
+                            FROM (
+                                SELECT market_names.display_name, market_names.filter_name, 
+                                    futures.*, 
+                                    (futures.pm_long-futures.pm_short) as pm_net,
+                                    100.0 * CAST (futures.pm_long-futures.pm_short as FLOAT)/futures.open_interest as pm_net_as_percent_oi,
+                                    (futures.mm_long-futures.mm_short) as mm_net,
+                                    100.0 * CAST (futures.mm_long-futures.mm_short as FLOAT)/futures.open_interest as mm_net_as_percent_oi
+                                FROM futures
+                                JOIN market_names on futures.id_name = market_names.id_name
+                                ORDER BY futures.id_name, report_date 
+                            ) as t1
+                        ) as t2;''')
 
-                cur.execute('''CREATE TABLE future_prices 
-                    (
-                        id_price INTEGER NOT NULL PRIMARY KEY,
-                        id_name INTEGER NOT NULL,
-                        report_date DATE NOT NULL,
-                        close REAL,
-                        volume INTEGER,
-                        FOREIGN KEY (id_name) REFERENCES market_name (id_name) 
-                            ON DELETE CASCADE ON UPDATE NO ACTION,
-                        UNIQUE(id_name, report_date)
-                    );''')
-
+                if 'future_prices' not in tables:
+                    cur.execute('''CREATE TABLE future_prices 
+                        (
+                            id_price INTEGER NOT NULL PRIMARY KEY,
+                            id_name INTEGER NOT NULL,
+                            report_date DATE NOT NULL,
+                            close REAL,
+                            volume INTEGER,
+                            FOREIGN KEY (id_name) REFERENCES market_name (id_name) 
+                                ON DELETE CASCADE ON UPDATE NO ACTION,
+                            UNIQUE(id_name, report_date)
+                        );''')
 
             elif self.config['data type'] == 'TiFF':
                 self.log.info('Create db %s with TiFF format', self.db_filepath)
@@ -90,11 +99,12 @@ class Importer():
         finally:
             con.close()      
 
+
     def import_cot_data(self, data):
         fpath = pathlib.Path(self.db_filepath)
 
-        if not fpath.exists():
-            self.create_db(self.db_filepath)
+        #if not fpath.exists():
+        self.create_db(self.db_filepath)
 
 
         try:
@@ -122,8 +132,13 @@ class Importer():
     def intialise_filters(self, fmap):
         try:
             market_names = []
+
+            symbols = []
+
             for filter in fmap:
-                market_names.append({'display': None, 'filter': filter, 'symbol': fmap[filter]['symbol']})
+                if fmap[filter]['symbol'] not in symbols:
+                    market_names.append({'display': None, 'filter': filter, 'symbol': fmap[filter]['symbol']})
+                    symbols.append(fmap[filter]['symbol'])
 
             con = sqlite3.connect(self.db_filepath, detect_types=sqlite3.PARSE_DECLTYPES |
                                                         sqlite3.PARSE_COLNAMES)
@@ -139,11 +154,11 @@ class Importer():
 
             if result:
                 for row in result:
-                    if row[2] in fmap:
-                        fmap[row[2]]['id'] = row[0]
-                        fmap[row[2]]['display_name'] = row[1]
-                        fmap[row[2]]['symbol'] = row[3]
-
+                    for filter in fmap:
+                        if row[3] == fmap[filter]['symbol']:
+                            fmap[filter]['id'] = row[0]
+                            fmap[row[2]]['display_name'] = row[1]
+                            
             con.commit()
         except Exception as e:
             con.rollback()
@@ -176,7 +191,9 @@ class Importer():
         names = {}
 
         for item in self.config['items']:
-            names[item['filter']] = item
+            for filter in item['filters']:
+                names[filter] = item
+
 
         return names
 
@@ -202,6 +219,9 @@ class Importer():
                 else:
                     self.log.warning('Row missing a field for Report Date: %s', row)
                     continue
+
+                if 'WTI-PHYSICAL' in row['Market_and_Exchange_Names']:
+                    print("Found oil!")
 
                 # Optimisation - check if last filter used matches
                 if last_filter and last_filter in row['Market_and_Exchange_Names'].upper():
