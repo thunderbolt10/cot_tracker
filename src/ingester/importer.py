@@ -170,7 +170,7 @@ class Importer():
         try:
             market_names = []
             for filter in fmap:
-                market_names.append({'display': fmap[filter]['display_name'], 'filter': filter})
+                market_names.append({'display': fmap[filter]['display_name'], 'id': fmap[filter]['id']})
 
             con = sqlite3.connect(self.db_filepath, detect_types=sqlite3.PARSE_DECLTYPES |
                                                         sqlite3.PARSE_COLNAMES)
@@ -178,7 +178,7 @@ class Importer():
 
             # update the display name of existing market names to the latest representation
             cur.executemany('''UPDATE market_names SET display_name = :display
-                            WHERE filter_name = :filter''', market_names)
+                            WHERE id_name = :id''', market_names)
 
             con.commit()
         except Exception as e:
@@ -219,9 +219,6 @@ class Importer():
                 else:
                     self.log.warning('Row missing a field for Report Date: %s', row)
                     continue
-
-                if 'WTI-PHYSICAL' in row['Market_and_Exchange_Names']:
-                    print("Found oil!")
 
                 # Optimisation - check if last filter used matches
                 if last_filter and last_filter in row['Market_and_Exchange_Names'].upper():

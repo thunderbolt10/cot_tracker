@@ -1,5 +1,7 @@
 {
     "quandl api key": "5y788y55ZZp5ne9yryys",
+    "alpha vantage api key": "EG0FD7Y8OJBWRPDZ",
+    "iex api key": "pk_4c6aa4563d084c7cb3b4e1453491b334",
     "cot source": {
         "commodities": {
             "start year": "2010",
@@ -34,7 +36,7 @@
                 {
                     "name": "Natural Gas",
                     "filters": ["NATURAL GAS", 
-                                "NAT GAS NYME - NEW YORK MERCANTILE EXCHANGE"],
+                                "NAT GAS ICE LD1"],
                     "symbol": "NG"
                 },
                 {
