@@ -35,8 +35,8 @@
                 },
                 {
                     "name": "Natural Gas",
-                    "filters": ["NATURAL GAS", 
-                                "NAT GAS ICE LD1"],
+                    "filters": ["NATURAL GAS - NEW YORK MERCANTILE EXCHANGE", 
+                                "NAT GAS NYME - NEW YORK MERCANTILE EXCHANGE"],
                     "symbol": "NG"
                 },
                 {
