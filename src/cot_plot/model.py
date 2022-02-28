@@ -27,7 +27,7 @@ class DBmodel():
             if result:
                 data['future_name'] = result[0]
 
-            cur.execute('''SELECT report_date, open_interest, pm_net_5_yr, mm_net_5_yr, swap_net_5_yr, other_net_5_yr
+            cur.execute('''SELECT report_date, open_interest, pm_net_5_yr, mm_net_5_yr
                     FROM future_calc
                     JOIN market_names on future_calc.id_name=market_names.id_name
                     WHERE market_names.symbol = :code;
@@ -35,14 +35,12 @@ class DBmodel():
 
             result = cur.fetchall()
             for r in result:
-                if r[0] is not None and r[1] is not None and r[2] is not None and r[3] is not None and r[4] is not None and r[5] is not None:
+                if r[0] is not None and r[1] is not None and r[2] is not None and r[3] is not None:
                     data['cot'].append({
                         'date': str(r[0]),
                         'oi': r[1],
                         'pm5': round(r[2]),
-                        'mm5': round(r[3]),
-                        'swap5': round(r[4]),
-                        'other5': round(r[5])
+                        'mm5': round(r[3])
                     })
 
             # Get price data

@@ -121,7 +121,7 @@ function plot_chart(cot_data, price_data) {
   var cotAxis = chart.yAxes.push(new am4charts.ValueAxis());
   cotAxis.tooltip.disabled = true;
   // height of axis
-  cotAxis.height = am4core.percent(35);
+  cotAxis.height = am4core.percent(70);
   cotAxis.zIndex = 3;
   cotAxis.min = 0;
   cotAxis.max = 100;
@@ -170,56 +170,8 @@ function plot_chart(cot_data, price_data) {
   MMSeries.tooltip.background.fill = am4core.color('#444');
   MMSeries.tooltip.label.fill = am4core.color('#99ea39');
 
-  // COT Swap & Other chart
-  var cotAxis2 = chart.yAxes.push(new am4charts.ValueAxis());
-  cotAxis2.tooltip.disabled = true;
-  // height of axis
-  cotAxis2.height = am4core.percent(35);
-  cotAxis2.zIndex = 3;
-  cotAxis2.min = 0;
-  cotAxis2.max = 100;
-  cotAxis2.strictMinMax = true;
-  // this makes gap between panels
-  cotAxis2.marginTop = 30;
-  cotAxis2.renderer.baseGrid.disabled = true;
-  cotAxis2.renderer.inside = false;
-  cotAxis2.renderer.labels.template.verticalCenter = "middle";
-  cotAxis2.renderer.labels.template.padding(2, 2, 2, 2);
-  //valueAxis.renderer.maxLabelPosition = 0.95;
-  cotAxis2.renderer.fontSize = "0.8em";
-  cotAxis2.title.text = '%';
-  cotAxis2.title.fill = am4core.color("#c7c7c7");
-  cotAxis2.renderer.labels.template.fill = am4core.color("#c7c7c7");
-  cotAxis2.renderer.gridContainer.background.fill = am4core.color("#000000");
-  cotAxis2.renderer.gridContainer.background.fillOpacity = 0.2;
 
-  var SwapSeries = chart.series.push(new am4charts.StepLineSeries());
-  SwapSeries.data = cot_data;
-  SwapSeries.stroke = am4core.color("#39b2ea");
-  SwapSeries.dataFields.dateX = "date";
-  SwapSeries.dataFields.valueY = "swap5";
-  SwapSeries.yAxis = cotAxis2;
-  SwapSeries.tooltipText = "Swap: {valueY.formatNumber('#.#|0')}%";
-  SwapSeries.name = "Swap";
-  SwapSeries.tooltip.getFillFromObject = false;
-  SwapSeries.tooltip.getStrokeFromObject = true;
-  SwapSeries.tooltip.background.fill = am4core.color('#444');
-  SwapSeries.tooltip.label.fill = am4core.color('#39b2ea');
-
-  var OtherSeries = chart.series.push(new am4charts.StepLineSeries());
-  OtherSeries.data = cot_data;
-  OtherSeries.stroke = am4core.color("#99ea39");
-  OtherSeries.dataFields.dateX = "date";
-  OtherSeries.dataFields.valueY = "other5";
-  OtherSeries.yAxis = cotAxis2;
-  OtherSeries.tooltipText = "Other: {valueY.formatNumber('#.#|0')}%";
-  OtherSeries.name = "Other";
-  OtherSeries.tooltip.getFillFromObject = false;
-  OtherSeries.tooltip.getStrokeFromObject = true;
-  OtherSeries.tooltip.background.fill = am4core.color('#444');
-  OtherSeries.tooltip.label.fill = am4core.color('#99ea39');
-
-  // Prices chart
+  // Open Interest chart
   var OIAxis = chart.yAxes.push(new am4charts.ValueAxis());
   OIAxis.tooltip.disabled = true;
   OIAxis.height = am4core.percent(20);
@@ -262,7 +214,6 @@ function plot_chart(cot_data, price_data) {
   positions = {
     
       'pm': 2,
-      'so': Math.round(div_height * 0.347),
       'oi': Math.round(div_height * 0.685),
     /*
     '720': {
@@ -301,13 +252,6 @@ function plot_chart(cot_data, price_data) {
   PMlabel.text = "Dealers and Speculators";
   PMlabel.x = div_width - 120;
   PMlabel.y = positions['pm'];
-
-  
-  var SOlabel = chart.plotContainer.createChild(am4core.Label);
-  SOlabel.fill = am4core.color("#c7c7c7");
-  SOlabel.text = "Swap and Other";
-  SOlabel.x = div_width - 120;
-  SOlabel.y = positions['so'];
   
   var OIlabel = chart.plotContainer.createChild(am4core.Label);
   OIlabel.fill = am4core.color("#c7c7c7");

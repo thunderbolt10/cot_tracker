@@ -60,35 +60,21 @@ class Importer():
                     cur.execute('''CREATE VIEW future_calc AS
                         SELECT t2.*, 
                             100.0 * (t2.pm_net_as_percent_oi - t2.pm_5_yr_min )/ NULLIF(t2.pm_5_yr_max - t2.pm_5_yr_min, 0) as pm_net_5_yr,
-                            100.0 * (t2.mm_net_as_percent_oi - t2.mm_5_yr_min )/ nullif(t2.mm_5_yr_max - t2.mm_5_yr_min, 0) as mm_net_5_yr,
-                            100.0 * (t2.swap_net_as_percent_oi - t2.swap_5_yr_min )/ nullif(t2.swap_5_yr_max - t2.swap_5_yr_min, 0) as swap_net_5_yr,
-                            100.0 * (t2.other_net_as_percent_oi - t2.other_5_yr_min )/ nullif(t2.other_5_yr_max - t2.other_5_yr_min, 0) as other_net_5_yr
+                            100.0 * (t2.mm_net_as_percent_oi - t2.mm_5_yr_min )/ nullif(t2.mm_5_yr_max - t2.mm_5_yr_min, 0) as mm_net_5_yr
                         FROM (
                             SELECT t1.*,                        
                                 MIN(t1.pm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as pm_5_yr_min,
                                 MAX(t1.pm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as pm_5_yr_max,
                                 MIN(t1.mm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as mm_5_yr_min,
-                                MAX(t1.mm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as mm_5_yr_max,
-
-                                MIN(t1.swap_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as swap_5_yr_min,
-                                MAX(t1.swap_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as swap_5_yr_max,
-
-                                MIN(t1.other_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as other_5_yr_min,
-                                MAX(t1.other_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as other_5_yr_max
+                                MAX(t1.mm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as mm_5_yr_max
                             FROM (
                                 SELECT market_names.display_name, market_names.filter_name, 
                                     futures.*, 
                                     (futures.pm_long-futures.pm_short) as pm_net,
-                                    100.0 * CAST (futures.pm_long-futures.pm_short as FLOAT)/futures.open_interest as pm_net_as_percent_oi,
+                                    100.0 * CAST ((futures.pm_long + futures.swap_long)-(futures.pm_short+futures.swap_short) as FLOAT)/futures.open_interest as pm_net_as_percent_oi,
                                     
                                     (futures.mm_long-futures.mm_short) as mm_net,
-                                    100.0 * CAST (futures.mm_long-futures.mm_short as FLOAT)/futures.open_interest as mm_net_as_percent_oi,
-
-                                    (futures.swap_long-futures.swap_short) as swap_net,
-                                    100.0 * CAST (futures.swap_long-futures.swap_short as FLOAT)/futures.open_interest as swap_net_as_percent_oi,
-                                    
-                                    (futures.other_long-futures.other_short) as other_net,
-                                    100.0 * CAST (futures.other_long-futures.other_short as FLOAT)/futures.open_interest as other_net_as_percent_oi
+                                    100.0 * CAST ((futures.mm_long+futures.other_long)-(futures.mm_short+futures.other_short) as FLOAT)/futures.open_interest as mm_net_as_percent_oi
 
                                 FROM futures
                                 JOIN market_names on futures.id_name = market_names.id_name
