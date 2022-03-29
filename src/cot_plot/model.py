@@ -27,7 +27,7 @@ class DBmodel():
             if result:
                 data['future_name'] = result[0]
 
-            cur.execute('''SELECT report_date, open_interest, pm_net_5_yr, mm_net_5_yr
+            cur.execute('''SELECT report_date, open_interest, dealer_net_5_yr, spec_net_5_yr
                     FROM future_calc
                     JOIN market_names on future_calc.id_name=market_names.id_name
                     WHERE market_names.symbol = :code;
@@ -39,8 +39,8 @@ class DBmodel():
                     data['cot'].append({
                         'date': str(r[0]),
                         'oi': r[1],
-                        'pm5': round(r[2]),
-                        'mm5': round(r[3])
+                        'dealer5': round(r[2]),
+                        'spec5': round(r[3])
                     })
 
             # Get price data

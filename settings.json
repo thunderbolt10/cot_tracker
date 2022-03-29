@@ -8,7 +8,7 @@
             "disabled": "False",
             "description": "Disaggregated Futures-and-Options Combined Reports",
             "output file name": "Commodity Futures",
-            "data type": "DFaO",
+            "data type": "commodity",
             "live price url": "https://finance.yahoo.com/commodities",
             "alt live price url": "https://finance.yahoo.com/quote/",
             "download" : [
@@ -144,18 +144,130 @@
         },
         "financial": {
             "start year": "2010",
-            "disabled": "True",
+            "disabled": "False",
             "description": "Traders in Financial Futures ; Futures-and-Options Combined Reports",
             "output file name": "Financial Futures",
-            "data type": "TiFF",
-            "download" : {
-                "url": "https://www.cftc.gov/files/dea/history/",
-                "file prefix": "com_fin_txt_",
-                "file suffix": ".zip"
-            },
-            "market name filters": [
-                
-                ]
+            "data type": "financial",
+            "download" : [
+                {
+                    "type": "cot",
+                    "url": "https://www.cftc.gov/files/dea/history/",
+                    "file prefix": "com_fin_txt_",
+                    "file suffix": ".zip"
+                }
+            ],
+            "items": [
+                {
+                    "name": "Australian Dollar",
+                    "filters": ["AUSTRALIAN DOLLAR"],
+                    "symbol": "6A"
+                },
+                {
+                    "name": "British Pound",
+                    "filters": ["BRITISH POUND"],
+                    "symbol": "6B"
+                },
+                {
+                    "name": "Canadian Dollar",
+                    "filters": ["CANADIAN DOLLAR"],
+                    "symbol": "6C"
+                },
+                {
+                    "name": "Euro Fx",
+                    "filters": ["EURO FX"],
+                    "symbol": "6E"
+                },
+                {
+                    "name": "Japanese Yen",
+                    "filters": ["JAPANESE YEN"],
+                    "symbol": "6J"
+                },
+                {
+                    "name": "Mexican Peso",
+                    "filters": ["MEXICAN PESO"],
+                    "symbol": "6M"
+                },
+                {
+                    "name": "NZ Dollar",
+                    "filters": ["NZ DOLLAR", "NEW ZEALAND DOLLAR"],
+                    "symbol": "6N"
+                },
+                {
+                    "name": "Swiss Franc",
+                    "filters": ["SWISS FRANC"],
+                    "symbol": "6S"
+                },
+                {
+                    "name": "US Dollar Index",
+                    "filters": ["USD INDEX", "U.S. DOLLAR INDEX"],
+                    "symbol": "DX"
+                },
+                {
+                    "name": "Euro Dollar",
+                    "filters": ["EURODOLLARS"],
+                    "symbol": "ED"
+                },
+                {
+                    "name": "S&P 500 mini",
+                    "filters": ["E-MINI S&P 500"],
+                    "symbol": "CX"
+                },
+                {
+                    "name": "Nikkei 225",
+                    "filters": ["NIKKEI STOCK"],
+                    "symbol": "NK"
+                },
+                {
+                    "name": "Nasdaq 100 E-mini",
+                    "filters": ["NASDAQ MINI", "NASDAQ-100 STOCK INDEX (MINI)"],
+                    "symbol": "NQ"
+                },
+                {
+                    "name": "Ultra T-Bond",
+                    "filters": ["ULTRA UST BOND", "ULTRA U.S. TREASURY BONDS"],
+                    "symbol": "UB"
+                },
+                {
+                    "name": "S&P 500 VIX",
+                    "filters": ["VIX FUTURES"],
+                    "symbol": "VX"
+                },
+                {
+                    "name": "Dow Indu 30 E-mini",
+                    "filters": ["DJIA Consolidated"],
+                    "symbol": "YM"
+                },
+                {
+                    "name": "30 Year T-Bond",
+                    "filters": ["UST BOND - CHICAGO BOARD OF TRADE", "U.S. TREASURY BONDS -"],
+                    "symbol": "ZB"
+                },
+                {
+                    "name": "5 Year T-Note",
+                    "filters": ["UST 5Y NOTE", "5-YEAR U.S. TREASURY NOTES"],
+                    "symbol": "ZF"
+                },
+                {
+                    "name": "10 Year T-Note",
+                    "filters": ["UST 10Y NOTE", "10-YEAR U.S. TREASURY NOTES"],
+                    "symbol": "ZN"
+                },
+                {
+                    "name": "2 YEAR T-Note",
+                    "filters": ["UST 2Y NOTE", "2-YEAR U.S. TREASURY NOTES"],
+                    "symbol": "ZT"
+                },
+                {
+                    "name": "Bitcoin",
+                    "filters": ["BITCOIN"],
+                    "symbol": "BT"
+                },
+                {
+                    "name": "Ethereum",
+                    "filters": ["ETHER CASH SETTLED"],
+                    "symbol": "ET"
+                }
+            ]
         }
     },
     "cot plot": {

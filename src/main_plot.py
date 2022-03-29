@@ -19,17 +19,18 @@ import src.common.settings as settings
 from src.cot_plot.security import groupfinder, forbidden, load_user_accounts
 from src.updater import Updater
 
-import src.cot_plot.views.cot
+import src.cot_plot.views.commodity
+import src.cot_plot.views.financial
 
-def cot_routes(config):
-    config.add_route('cot_chart', '/chart')
-    config.add_route('cot_chart_data', '/chart/{code}' )
-    config.add_route('cot_prices', '/prices')
+def commodity_routes(config):
+    config.add_route('comm_chart', '/chart')
+    config.add_route('comm_chart_data', '/chart/{code}' )
+    config.add_route('comm_prices', '/prices')
 
-def radius_client_routes(config):
-    config.add_route('all_clients', '/')
-    config.add_route('status_update', '/status-update/')
-    config.add_route('radius_client_id', '/{id}')
+def financial_routes(config):
+    config.add_route('fin_chart', '/chart')
+    config.add_route('fin_chart_data', '/chart/{code}' )
+    config.add_route('fin_prices', '/prices')
 
 
 def include_routes(config):
@@ -39,7 +40,8 @@ def include_routes(config):
 
     config.add_route('home', 'cot/chart')
     
-    config.include(cot_routes, route_prefix='cot')
+    config.include(commodity_routes, route_prefix='commodities')
+    config.include(financial_routes, route_prefix='financials')
 
 
 
@@ -173,7 +175,8 @@ class WebServer(object):
             # When this app is frozen config.scan() does not work, so we manually include the views here
             self.logger.info("include views...")
             #self.config.scan('web.views')
-            src.cot_plot.views.cot.include_views(self.config)
+            src.cot_plot.views.commodity.include_views(self.config)
+            src.cot_plot.views.financial.include_views(self.config)
 
             self.logger.info("setup wsgi...")
             app = self.config.make_wsgi_app()

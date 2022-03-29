@@ -12,35 +12,35 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 @view_config(route_name='home')
 def home(request):
-    return HTTPFound(location=request.route_url('cot_chart'))
+    return HTTPFound(location=request.route_url('comm_chart'))
 
 def include_views(config):
-    config.add_view('src.cot_plot.views.cot.home',
+    config.add_view('src.cot_plot.views.commodity.home',
                     route_name='home',
                     #attr='home',
-                    renderer=program.get_template('cot_chart.mako'),
+                    renderer=program.get_template('commodity_chart.mako'),
                     request_method='GET')
 
-    config.add_view('src.cot_plot.views.cot.Cot',
-                    route_name='cot_chart',
+    config.add_view('src.cot_plot.views.commodity.Commodity',
+                    route_name='comm_chart',
                     attr='show_chart',
-                    renderer=program.get_template('cot_chart.mako'),
+                    renderer=program.get_template('commodity_chart.mako'),
                     request_method='GET')
 
 
-    config.add_view('src.cot_plot.views.cot.Cot',
-                    route_name='cot_chart_data',
+    config.add_view('src.cot_plot.views.commodity.Commodity',
+                    route_name='comm_chart_data',
                     attr='get_chart_data',
                     renderer='json',
                     request_method='GET')
 
-    config.add_view('src.cot_plot.views.cot.Cot',
-                    route_name='cot_prices',
+    config.add_view('src.cot_plot.views.commodity.Commodity',
+                    route_name='comm_prices',
                     attr='get_price_data',
                     renderer='json',
                     request_method='GET')
 
-class Cot:
+class Commodity:
     def __init__(self, request):
         self.logger = logging.getLogger(__name__)
         self.request = request

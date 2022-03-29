@@ -18,8 +18,8 @@ class Importer():
             con = sqlite3.connect(db_filepath, detect_types=sqlite3.PARSE_DECLTYPES |
                                                         sqlite3.PARSE_COLNAMES)
             cur = con.cursor()
-            if self.config['data type'] == 'DFaO':
-                self.log.info('Create db %s with DFaO format', db_filepath)
+            if self.config['data type'] == 'commodity':
+                self.log.info('Create db %s with format: %s', db_filepath, self.config['data type'])
 
                 tables = []
                 cur.execute('''SELECT * FROM sqlite_master where type='table' ''')
@@ -59,8 +59,8 @@ class Importer():
 
                     cur.execute('''CREATE VIEW future_calc AS
                         SELECT t2.*, 
-                            100.0 * (t2.pm_net_as_percent_oi - t2.pm_5_yr_min )/ NULLIF(t2.pm_5_yr_max - t2.pm_5_yr_min, 0) as pm_net_5_yr,
-                            100.0 * (t2.mm_net_as_percent_oi - t2.mm_5_yr_min )/ nullif(t2.mm_5_yr_max - t2.mm_5_yr_min, 0) as mm_net_5_yr
+                            100.0 * (t2.pm_net_as_percent_oi - t2.pm_5_yr_min )/ NULLIF(t2.pm_5_yr_max - t2.pm_5_yr_min, 0) as dealer_net_5_yr,
+                            100.0 * (t2.mm_net_as_percent_oi - t2.mm_5_yr_min )/ nullif(t2.mm_5_yr_max - t2.mm_5_yr_min, 0) as spec_net_5_yr
                         FROM (
                             SELECT t1.*,                        
                                 MIN(t1.pm_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as pm_5_yr_min,
@@ -95,8 +95,81 @@ class Importer():
                             UNIQUE(id_name, report_date)
                         );''')
 
-            elif self.config['data type'] == 'TiFF':
-                self.log.info('Create db %s with TiFF format', self.db_filepath)
+            elif self.config['data type'] == 'financial':
+                self.log.info('Create db %s with Financial format', db_filepath)
+
+                tables = []
+                cur.execute('''SELECT * FROM sqlite_master where type='table' ''')
+                res = cur.fetchall()
+                for r in res:
+                    tables.append(r[2])
+
+                if 'market_names' not in tables:
+                    cur.execute('''CREATE TABLE market_names 
+                        (
+                            id_name INTEGER NOT NULL PRIMARY KEY, 
+                            display_name TEXT,
+                            filter_name TEXT NOT NULL UNIQUE,
+                            symbol TEXT NOT NULL UNIQUE
+                        );''')
+
+                if 'futures' not in tables:
+                    cur.execute('''CREATE TABLE futures 
+                        (
+                            id_future INTEGER NOT NULL PRIMARY KEY,
+                            id_name INTEGER NOT NULL,
+                            report_date DATE NOT NULL,
+                            cftc_code INTEGER,
+                            open_interest INTEGER,
+                            dp_long INTEGER,
+                            dp_short INTEGER,
+                            am_long INTEGER,
+                            am_short INTEGER,
+                            lm_long INTEGER,
+                            lm_short INTEGER,
+                            or_long INTEGER,
+                            or_short INTEGER,
+                            FOREIGN KEY (id_name) REFERENCES market_name (id_name) 
+                                ON DELETE CASCADE ON UPDATE NO ACTION,
+                            UNIQUE(id_name, report_date)
+                        );''')
+
+                    cur.execute('''CREATE VIEW future_calc AS
+                        SELECT t2.*, 
+                            100.0 * (t2.dealer_net_as_percent_oi - t2.dealer_5_yr_min )/ NULLIF(t2.dealer_5_yr_max - t2.dealer_5_yr_min, 0) as dealer_net_5_yr,
+                            100.0 * (t2.spec_net_as_percent_oi - t2.spec_5_yr_min )/ nullif(t2.spec_5_yr_max - t2.spec_5_yr_min, 0) as spec_net_5_yr
+                        FROM (
+                            SELECT t1.*,                        
+                                MIN(t1.dealer_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as dealer_5_yr_min,
+                                MAX(t1.dealer_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as dealer_5_yr_max,
+                                MIN(t1.spec_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as spec_5_yr_min,
+                                MAX(t1.spec_net_as_percent_oi) OVER (PARTITION BY id_name ORDER BY julianday(report_date) ASC RANGE BETWEEN 1826 PRECEDING AND CURRENT ROW) as spec_5_yr_max
+                            FROM (
+                                SELECT market_names.display_name, market_names.filter_name, 
+                                    futures.*, 
+                                    (futures.dp_long-futures.dp_short) as dealer_net,
+                                    100.0 * CAST ((futures.dp_long-futures.dp_short) as FLOAT) / futures.open_interest as dealer_net_as_percent_oi,
+                                    ((futures.am_long + futures.lm_long + futures.or_long)-(futures.am_short + futures.lm_short + futures.or_short)) as spec_net,
+                                    100.0 * CAST ((futures.am_long + futures.lm_long + futures.or_long)-(futures.am_short + futures.lm_short + futures.or_short) as FLOAT)/futures.open_interest as spec_net_as_percent_oi
+                                FROM futures
+                                JOIN market_names on futures.id_name = market_names.id_name
+                                ORDER BY futures.id_name, report_date 
+                            ) as t1
+                        ) as t2;''')
+
+                if 'future_prices' not in tables:
+                    cur.execute('''CREATE TABLE future_prices 
+                        (
+                            id_price INTEGER NOT NULL PRIMARY KEY,
+                            id_name INTEGER NOT NULL,
+                            report_date DATE NOT NULL,
+                            close REAL,
+                            volume INTEGER,
+                            FOREIGN KEY (id_name) REFERENCES market_name (id_name) 
+                                ON DELETE CASCADE ON UPDATE NO ACTION,
+                            UNIQUE(id_name, report_date)
+                        );''')
+
 
             con.commit()
         except Exception as e:
@@ -119,17 +192,30 @@ class Importer():
                                                         sqlite3.PARSE_COLNAMES)
             cur = con.cursor()
 
-            cur.executemany('''INSERT OR IGNORE INTO futures 
-            (id_name, report_date, cftc_code, open_interest,
-             pm_long, pm_short, mm_long, mm_short,
-             swap_long, swap_short, other_long, other_short)
-            VALUES (:market_id, :report_date, :CFTC_Contract_Market_Code, 
-                :Open_Interest_All, 
-                :Prod_Merc_Positions_Long_All, :Prod_Merc_Positions_Short_All,
-                :M_Money_Positions_Long_All, :M_Money_Positions_Short_All,
-                :Swap_Positions_Long_All, :Swap__Positions_Short_All,
-                :Other_Rept_Positions_Long_All, :Other_Rept_Positions_Short_All
-                );''', fdata)
+            if self.config['data type'] == 'commodity':
+                cur.executemany('''INSERT OR IGNORE INTO futures 
+                    (id_name, report_date, cftc_code, open_interest,
+                    pm_long, pm_short, mm_long, mm_short,
+                    swap_long, swap_short, other_long, other_short)
+                    VALUES (:market_id, :report_date, :CFTC_Contract_Market_Code, 
+                        :Open_Interest_All, 
+                        :Prod_Merc_Positions_Long_All, :Prod_Merc_Positions_Short_All,
+                        :M_Money_Positions_Long_All, :M_Money_Positions_Short_All,
+                        :Swap_Positions_Long_All, :Swap__Positions_Short_All,
+                        :Other_Rept_Positions_Long_All, :Other_Rept_Positions_Short_All
+                        );''', fdata)
+            elif self.config['data type'] == 'financial':
+                cur.executemany('''INSERT OR IGNORE INTO futures 
+                    (id_name, report_date, cftc_code, open_interest,
+                    dp_long, dp_short, am_long, am_short,
+                    lm_long, lm_short, or_long, or_short)
+                    VALUES (:market_id, :report_date, :CFTC_Contract_Market_Code, 
+                        :Open_Interest_All, 
+                        :Dealer_Positions_Long_All, :Dealer_Positions_Short_All,
+                        :Asset_Mgr_Positions_Long_All, :Asset_Mgr_Positions_Short_All,
+                        :Lev_Money_Positions_Long_All, :Lev_Money_Positions_Short_All,
+                        :Other_Rept_Positions_Long_All, :Other_Rept_Positions_Short_All
+                        );''', fdata)
 
             con.commit()
         

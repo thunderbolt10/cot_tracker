@@ -146,10 +146,10 @@ function plot_chart(cot_data, price_data) {
   PMSeries.data = cot_data;
   PMSeries.stroke = am4core.color("#39b2ea");
   PMSeries.dataFields.dateX = "date";
-  PMSeries.dataFields.valueY = "pm5";
+  PMSeries.dataFields.valueY = "dealer5";
   PMSeries.yAxis = cotAxis;
-  PMSeries.tooltipText = "PM: {valueY.formatNumber('#.#|0')}%";
-  PMSeries.name = "PM";
+  PMSeries.tooltipText = "Dealer: {valueY.formatNumber('#.#|0')}%";
+  PMSeries.name = "Dealer";
   PMSeries.tooltip.getFillFromObject = false;
   PMSeries.tooltip.getStrokeFromObject = true;
   PMSeries.tooltip.background.fill = am4core.color('#444');
@@ -161,10 +161,10 @@ function plot_chart(cot_data, price_data) {
   MMSeries.data = cot_data;
   MMSeries.stroke = am4core.color("#99ea39");
   MMSeries.dataFields.dateX = "date";
-  MMSeries.dataFields.valueY = "mm5";
+  MMSeries.dataFields.valueY = "spec5";
   MMSeries.yAxis = cotAxis;
-  MMSeries.tooltipText = "MM: {valueY.formatNumber('#.#|0')}%";
-  MMSeries.name = "MM";
+  MMSeries.tooltipText = "Speculator: {valueY.formatNumber('#.#|0')}%";
+  MMSeries.name = "Spec";
   MMSeries.tooltip.getFillFromObject = false;
   MMSeries.tooltip.getStrokeFromObject = true;
   MMSeries.tooltip.background.fill = am4core.color('#444');

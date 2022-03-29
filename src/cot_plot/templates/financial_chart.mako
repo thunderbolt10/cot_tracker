@@ -34,10 +34,10 @@
     </div>
   </div>
   
-  % for c in commodities:
+  % for c in financials:
   <a id="${c['symbol']}" class="sidebar-item w3-button w3-hover-black " 
     data-name="${c['name']}"
-    onclick="commodity_selection(this)">
+    onclick="financial_selection(this)">
     <div class="w3-row ">
       <div class="w3-col" style="width:30%">${c['symbol']}</div>  
       <div id="${c['symbol']}-price" class="w3-col com-value" style="width:23%"></div>
@@ -55,7 +55,7 @@
 <!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
 <div class="w3-main" >
   <div class="w3-row" style="padding-top: 30px;">
-    <h6 id="page-item-title" class="pink-text">Select a Commodity</h6>
+    <h6 id="page-item-title" class="pink-text">Select a Financial</h6>
     <div id="chartdiv" class="main-chart"></div>
     <div id="controls" class="chart-controls"></div>
   </div>
@@ -99,11 +99,11 @@
       }
 
       $( document ).ready(function() {
-        $('#commodity-page-light').addClass('pink-bkg');
+        $('#financial-page-light').addClass('pink-bkg');
         update_prices();
       });
 
-      function commodity_selection(ctrl){
+      function financial_selection(ctrl){
         var url = "${request.current_route_url()}/" + ctrl.id;
         
         $.ajax({
@@ -120,7 +120,7 @@
 
       function update_prices() {
         
-        var url = "${request.route_url('cot_prices')}";
+        var url = "${request.route_url('fin_prices')}";
         
         $.ajax({
             type: "GET",
