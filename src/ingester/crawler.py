@@ -34,7 +34,14 @@ class Crawler():
                 os.makedirs(tmp_path, exist_ok=True)
                 local_filepath = os.path.join(tmp_path, csv_file)
 
-            with urllib.request.urlopen(download_path) as response, open(local_filepath, 'wb') as out_file:
+            req = urllib.request.Request(
+                download_path, 
+                data=None, 
+                headers={
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
+                }
+            )
+            with urllib.request.urlopen(req) as response, open(local_filepath, 'wb') as out_file:
                 shutil.copyfileobj(response, out_file)
 
             
