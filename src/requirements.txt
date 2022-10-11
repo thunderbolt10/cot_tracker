@@ -1,0 +1,10 @@
+pyramid
+pyramid_mako
+cherrypy
+bcrypt
+quandl
+beautifulsoup4
+pandas
+numpy
+requests
+multitasking
