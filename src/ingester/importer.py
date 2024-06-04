@@ -308,6 +308,7 @@ class Importer():
 
         try:
             last_filter = None
+            last_row = None
 
             for row in data:
                 if 'Report_Date_as_YYYY-MM-DD' in row:
@@ -317,9 +318,11 @@ class Importer():
                 else:
                     self.log.warning('Row missing a field for Report Date: %s', row)
                     continue
-
+                    
                 # Optimisation - check if last filter used matches
-                if last_filter and last_filter in row['Market_and_Exchange_Names'].upper():
+                if last_row == row['Market_and_Exchange_Names'] \
+                    and last_filter \
+                        and last_filter in row['Market_and_Exchange_Names'].upper():
                     row['market_id'] = fmap[last_filter]['id']
                     fdata.append(row)
                 else:
@@ -329,10 +332,12 @@ class Importer():
                             row['market_id'] = fmap[filter]['id']
                             fdata.append(row)
                             last_filter = filter
+                            last_row = row['Market_and_Exchange_Names']
 
                             if not fmap[filter]['display_name']:
                                 fmap[filter]['display_name'] = row['Market_and_Exchange_Names'].upper()
 
+                            print("%s:  '%s' matched to filter: '%s' " % ( fmap[filter]['symbol'], row['Market_and_Exchange_Names'].upper(), filter))
                             break
 
             self.update_market_names(fmap)
